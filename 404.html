@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title> Page not found </title>
+    <meta name="author" content="Shifone"/>
+    <meta name="description" content="jQuery中文手册(在线版),jquery中文api,jquery api,jquery 1.11.1 api"/>
+    <meta name="keywords" content="jquery中文api,jquery,chm,手册,在线,api,jquery api,jquery api 1.11.1,jquery最新api" />
+    <meta name="revised" content="1.11.1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/404_efcb2a0.css">
+    <!--[if lt IE 9]>
+        <script src="js/html5shiv_831d9bc.js"></script>
+    <![endif]-->
+</head>
+<body>
+    
+    <div class="contanier" id="contanier" >
+        <canvas class="animation" width="1840" height="669" style="opacity: 1;"></canvas>
+        
+        <div class="content">
+            <p class="error">404 NOT FOUND</p>
+            <p class="info">The page you are looking for does not exist.</p>
+            <div class="nav">
+                <a href="index.html"> Home </a>
+                <a href="http://www.cuishifeng.cn" target="_blank">Contact</a>
+            </div>
+        </div>
+
+
+
+    </div>
+
+<script src="js/jquery-1.11.1_125bece.js"></script>
+<script src="js/404_7473384.js"></script>
+<script > 
+
+$(function(){
+    $("#contanier").engine();
+    $(window).bind("load resize", function(event) {
+        $(".interface").css({
+        "margin": $(window).height() + "px 0 0 0"
+        });
+    });
+    $(window).bind("load resize scroll", function(event) {
+        $(".interface").effect();
+    });
+});
+
+</script>
+
+
+    
+</body>
+</html>

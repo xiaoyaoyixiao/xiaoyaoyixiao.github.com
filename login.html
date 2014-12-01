@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html class="no-js" lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="keywords" content=""/>
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <meta name="robots" content="all">
+    <meta name="viewport" content="width=device-width, height=device-height,initial-scale=1">
+    <title>Login</title>
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body>
+
+    <!--[if lt IE 10]>
+        <div class="browsehappy">
+            <a href="http://browsehappy.com" title="点击获取最新浏览器">
+                <img src="images/browsehappy-sprite.png" alt="点击获取最新浏览器">
+            </a>
+        </div>
+    <![endif]-->
+
+
+    <section class="container">
+        <div class="logo_con">
+            <img class="logo_img" src="images/login_logo.png" alt="">
+        </div>
+        <div class="logo_title">Shifone</div>
+    
+        <div class="login_info" id="login_info">
+            <div class="login_item">
+                <input id="j_username" class="login_item_in" type="text"  autofocus="autofocus" placeholder="Username" maxlength="20">
+            </div>
+            <div class="login_item">
+                <input id="j_password" class="login_item_in login_item_in_pwd" type="password" placeholder="Password" maxlength="20">
+            </div>
+            <div id="j_code_con" class="login_item" style="display:none;" >
+                <input id="j_code" class="login_item_in login_item_in_code" type="text" placeholder="Identification" maxlength="4">
+                <img id="j_code_img" src=""  alt="">
+            </div>
+
+            <div class="remeber_con">
+                <label for="j_remember">
+                    <input id="j_remember" type="checkbox" value="1"> 
+                    <i class="check_radio"></i>
+                    <span>Remember me ?</span>
+                </label>
+            </div>
+
+        </div>
+
+        <div class="login_btn" id="login_btn">
+            <a id="btn_submit" href="javascript:void(0);" class="btn_submit">Login</a>
+        </div>
+    </section>
+
+    <section id="dialog-alert" class="dialog-alert" style="display:none;">
+        <!--<div class="dialog-overlay"></div>-->
+        <div class="dialog-main" >
+            <div id="dialog-alert-msg" class="dialog-msg">
+            </div>
+            <div id="dialog-alert-btn-con" class="dialog-btn-con">
+                <a id="dialog-alert-btn" href="javascript:void(0);" class="dialog-btn" >我知道了</a> 
+            </div>
+        </div>
+    </section>
+
+    <script type="text/javascript" src="js/src/common/jquery/1.11.1/jquery-1.11.1.js"></script>
+    <script type="text/javascript">
+        $(function(){
+
+
+            $("#login_info,#login_btn").fadeIn();
+
+            var err_count = localStorage.getItem("err_count") || 0;
+            var dialog_alert = $("#dialog-alert");
+
+            if(err_count >= 3){
+                $("#j_code_con").show();
+                loadCode();
+            }
+
+
+            function login(){
+                var j_username = $.trim($("#j_username").val());
+                var j_password = $.trim($("#j_password").val());
+                var j_code = $.trim($("#j_code").val());
+                var j_remember = $("#j_remember").is(":checked");
+
+                if(j_username ==="" || j_password === ""){
+                    showDialog("用户名密码不能为空！");
+                    return true;
+                }
+
+                if($("#j_code").is(":visible") && j_code === ""){
+                    showDialog("验证码不能为空！");
+                    return true;
+                }
+
+                var params = {
+                    j_username : j_username,
+                    j_password : j_password,
+                    j_code : j_code,
+                    j_remember : j_remember
+                };
+
+                $.ajax({
+                    url: "login",
+                    data: params,
+                    cache: false,
+                    dataType: "json",
+                    success: function(data){
+                        if(data.status == 0){
+                            localStorage.removeItem("err_count");
+                            window.location.href = "main.html";
+                        }else if(data.status == -1){
+                            if(++err_count >= 3){
+                                $("#j_code_con").show();
+                                loadCode();
+                            }
+                            localStorage.setItem("err_count",err_count);
+                            showDialog("用户名或密码错误！");
+                            $("#j_username").focus();
+                        }else if(data.status == 9){
+                            showDialog("验证码填写错误！");
+                            $("#j_code").val("").focus();
+                        }
+                        
+                    }
+                });
+            }
+
+            function loadCode(){
+                $.ajax({
+                    url: "user/code",
+                    cache: false,
+                    dataType: "json",
+                    success: function(data){
+                        if(data.status == 0){
+                            $("#j_code_img").attr("src",data.response);
+                        }
+                    }
+                });
+            }
+
+
+            function showDialog(msg){
+                $("#dialog-alert-msg").html(msg);
+                dialog_alert.show().unbind("click").click(function(){
+                    dialog_alert.hide();
+                });
+                window.setTimeout(function(){
+                    dialog_alert.hide();
+                },5000);
+            }
+
+
+            $(document).keydown(function(event){
+                if(event.keyCode === 13){
+                    login();
+                }
+            });
+
+            $("#btn_submit").click(function(){
+                login();
+            });
+
+            $("#j_code_img").bind("click",loadCode);
+
+
+            $("#dialog-alert-btn").click(function(){
+                $("#dialog-alert").show();
+            });
+            
+        });
+    </script>
+
+</body>
+</html>
